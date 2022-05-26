@@ -1,7 +1,7 @@
 import os
 import shutil
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List
 
 from pydantic import Field
 
@@ -20,8 +20,17 @@ class EnvCopyPattern(BasePattern):
     as_link: bool = False
 
 
+_T_DirTree = Dict[str, "_T_DirTree"]  # type: ignore
+
+
+class EnvDirTreePattern(BasePattern):
+    root: Path = Path("~/")
+    tree: Dict[str, Any] = Field(default_factory=dict)
+
+
 class EnvPattern(BasePattern):
-    copy_: Optional[List[EnvCopyPattern]] = Field(alias="copy", default_factory=list)
+    copy_: List[EnvCopyPattern] = Field(alias="copy", default_factory=list)
+    dirtree: EnvDirTreePattern
 
 
 class EnvProvider(BaseProvider[EnvPattern]):
@@ -46,6 +55,11 @@ class EnvProvider(BaseProvider[EnvPattern]):
                 )
                 if res.err:
                     provider_cmd_error(res)
+
+        if self.section_obj.dirtree:
+            section = self.section_obj.dirtree
+
+            self._build_dirtree(section.root.expanduser().absolute(), section.tree)
 
     def _env_copy(
         self, env: "Environment", source: Path, dest: Path, as_link: bool, force: bool
@@ -93,3 +107,17 @@ class EnvProvider(BaseProvider[EnvPattern]):
             os.symlink(source, dest)
 
         return ProviderOperationResult()
+
+    def _build_dirtree(self, root: Path, dir_tree: _T_DirTree) -> None:
+        def _walk(sub_tree: _T_DirTree, cur_path: Path) -> None:
+            for folder in sub_tree:
+                new_cur_path = cur_path / folder
+                if not new_cur_path.exists():
+                    new_cur_path.mkdir()
+
+                if sub_tree[folder]:
+                    _walk(sub_tree[folder], new_cur_path)
+
+        _walk(dir_tree, root)
+
+        print("Directory structure builded!")

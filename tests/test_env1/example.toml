@@ -1,18 +1,22 @@
 [apt]
+install = ["gcc", "git"]
 update = true
 upgrade = true
-install = ["gcc", "git"]
 
 # [[apt.repos]]
 # key_url = "https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc"
 # repo_url = "http://deb.torproject.org/torproject.org"
 
 [[apt.repos]]
+branch = "stable"
 key_url = "https://download.docker.com/linux/${distr_name}/gpg"
 repo_url = "https://download.docker.com/linux/${distr_name}"
-branch = "stable"
 
 [[env.copy]]
-source = "conf.example"
-dest = "${home}/conf.example"
 as_link = true
+dest = "${home}/conf.example"
+source = "conf.example"
+
+[env.dirtree]
+root = "~/"
+tree = {Develop = {Python = {}, Cpp = {}}, Downloads = {}, Sources = {}, Videos = {Cats = {}, Dogs = {}, Frogs = {}}}
