@@ -1,0 +1,28 @@
+[tool.poetry]
+authors = ["Stanislav Lyubovsky <wallseat@gmail.com>"]
+description = "Envira environment configuration management tool"
+license = "MIT"
+name = "envira"
+version = "0.0.1"
+
+[tool.poetry.dependencies]
+pydantic = "^1.9.1"
+python = "^3.7"
+tomli = "^2.0.1"
+
+[tool.poetry.dev-dependencies]
+autoflake = "^1.4"
+black = "^22.3.0"
+isort = "^5.10.1"
+pre-commit = "^2.19.0"
+bump2version = "^1.0.1"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool.poetry.build]
+generate-setup-file = false
+
+[tool.poetry.scripts]
+envira = "envira.configurator:main"
