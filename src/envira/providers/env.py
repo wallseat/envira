@@ -160,12 +160,10 @@ class EnvProvider(BaseProvider[EnvPattern]):
 
         else:
             if (
-                dest.exists()
-                or (
-                    not dest.is_symlink()
-                    or (dest.is_symlink() and dest.resolve() != source)
-                )
-            ) and not force:
+                (dest.exists() and not dest.is_symlink())
+                or (dest.is_symlink() and dest.resolve() != source)
+                and not force
+            ):
                 return ProviderOperationResult(
                     err=f"File {dest} already exists! Use -f/--force to overwrite!"
                 )
@@ -174,7 +172,7 @@ class EnvProvider(BaseProvider[EnvPattern]):
                 if dest.resolve() == source:
                     return ProviderOperationResult()
                 else:
-                    os.unlink(dest)
+                    os.remove(dest)
 
             os.symlink(source, dest)
 
