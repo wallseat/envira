@@ -70,13 +70,14 @@ def _get_exec_info() -> ExecInfo:
 
     exc_path = Path(os.path.curdir).absolute()
     cache_path = Path("~/.cache/envira").expanduser().absolute()
+    uhome = Path("~").expanduser().absolute()
 
     return ExecInfo(
         uname=uname,
         euname=euname,
         uid=uid,
         euid=euid,
-        uhome="/home/" + uname,
+        uhome=uhome,
         exc_path=exc_path,
         cache_path=cache_path,
     )
