@@ -113,6 +113,7 @@ class Environment:
                     break
             else:
                 print("Config file not found in provided path!")
+                return
 
         elif path.is_file():
             if path.name == EXEC_INFO.config_file:
@@ -123,6 +124,10 @@ class Environment:
 
             else:
                 print("Provided file name not matching config filename!")
+                return
+
+        if not EXEC_INFO.cache_path.exists():
+            EXEC_INFO.cache_path.mkdir(parents=True)
 
     @property
     def prepared(self) -> bool:
