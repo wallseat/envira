@@ -15,7 +15,7 @@ repo_url = "https://download.docker.com/linux/${distr_name}"
 [[env.copy]]
 as_link = true
 dest = "${home}/conf.example"
-source = "conf.example"
+source = "files/conf.example"
 
 [env.dirtree]
 root = "~/"
@@ -26,8 +26,8 @@ tree = [
   {name = "Videos", nested = [{name = "Cats"}, {name = "Dogs"}, {name = "Frogs"}]},
 ]
 
-[[env.exec]]
-as_root = false
-cmd = 'sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
-envs = {EXAMPLE_ENV = "LOL KEK"}
-shell = "sh"
+# [[env.exec]]
+# as_root = false
+# cmd = 'sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
+# envs = {EXAMPLE_ENV = "LOL KEK"}
+# shell = "sh"

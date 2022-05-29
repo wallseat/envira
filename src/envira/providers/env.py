@@ -125,7 +125,7 @@ class EnvProvider(BaseProvider[EnvPattern]):
         if not path.is_absolute():
             path = path.expanduser().absolute()
 
-        if not env.folder_path == path.parents[0]:
+        if env.folder_path not in path.parents:
             return False
 
         return True
