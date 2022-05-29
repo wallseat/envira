@@ -8,7 +8,7 @@ from urllib.request import urlopen
 
 from pydantic import Field
 
-from envira.environment import EXEC_INFO, LSB_INFO
+from envira.environment import EXEC_INFO, SYS_INFO
 from envira.providers._base import (
     BasePattern,
     BaseProvider,
@@ -163,7 +163,7 @@ class AptProvider(BaseProvider[AptPattern]):
             + ("[signed-by=" + gpg_key_path + "] " if gpg_key_path else "")
             + repo_url
             + " "
-            + LSB_INFO.codename
+            + SYS_INFO.codename
             + " "
             + branch
             + "\n"

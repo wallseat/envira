@@ -3,7 +3,7 @@ from typing import Dict, Type
 
 import tomli
 
-from envira.environment import EXEC_INFO, LSB_INFO, Environment, set_config_file
+from envira.environment import EXEC_INFO, SYS_INFO, Environment, set_config_file
 from envira.git import GitLoader
 from envira.providers import BaseProvider, get_providers
 from envira.utils import is_path, is_url
@@ -37,8 +37,8 @@ class Configurator:
     @staticmethod
     def _unfold_macro(raw_data: str):
         return (
-            raw_data.replace("${distr_name}", LSB_INFO.distr)
-            .replace("${distr_ver}", LSB_INFO.ver)
+            raw_data.replace("${distr_name}", SYS_INFO.id_)
+            .replace("${distr_ver}", SYS_INFO.version)
             .replace("${user}", EXEC_INFO.uname)
             .replace("${home}", EXEC_INFO.uhome)
         )
@@ -74,6 +74,10 @@ def main() -> int:
             "You need to have root privileges to run this script.\n"
             "Please try again, this time using 'sudo'. Exiting."
         )
+        return 1
+
+    if SYS_INFO.os != "linux":
+        print(f"Platform {SYS_INFO.os} not currently supported!")
         return 1
 
     args = prepare_args()

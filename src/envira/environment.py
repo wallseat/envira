@@ -1,19 +1,24 @@
 import os
 import pwd
-import subprocess
+import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Union
 
-from pydantic import BaseModel
+
+@dataclass
+class SysInfo:
+    os: str
+
+    id_: Optional[str]
+    version: Optional[str]
+    codename: Optional[str]
+
+    default_shell: str = "sh"
 
 
-class LsbInfo(BaseModel):
-    distr: str
-    ver: str
-    codename: str
-
-
-class ExecInfo(BaseModel):
+@dataclass
+class ExecInfo:
     uname: str
     euname: str
     uid: int
@@ -25,38 +30,43 @@ class ExecInfo(BaseModel):
     config_file: Optional[str] = "envira.toml"
 
 
-def _get_lsb_info() -> LsbInfo:
-    proc = subprocess.Popen(
-        ["lsb_release", "-a"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-    )
+def _get_sys_info() -> SysInfo:
+    if sys.platform != "linux":
+        return SysInfo(os=sys.platform)
 
-    out, err = proc.communicate()
+    obj = {"os": sys.platform}
 
-    if proc.returncode != 0:
-        print(
-            f"An error occurred in lsb_release, exit code: {proc.returncode}, reason: {err}"
+    with open("/etc/os-release", "r") as f:
+        os_data = f.readlines()
+
+    for line in os_data:
+        k, v = (lambda tup: (tup[0].lower(), tup[1].strip('"').strip()))(
+            line.split("=")
         )
 
-    obj = {}
-    for line in out.splitlines():
-        if line.startswith(("Distributor ID", "Release", "Codename")):
-            k, v = line.split(":\t")
-            k = (
-                k.replace("Distributor ID", "distr")
-                .replace("Release", "ver")
-                .replace("Codename", "codename")
-            )
-            obj[k] = v.strip().lower()
+        if k == "id":
+            obj["id_"] = v
+        elif k == "version_codename":
+            obj["codename"] = v
+        elif k == "version_id":
+            obj["version"] = v
 
-    return LsbInfo.parse_obj(obj)
+    obj["default_shell"] = os.environ["SHELL"]
+
+    return SysInfo(**obj)
 
 
 def _get_exec_info() -> ExecInfo:
-    uid = os.getuid()
     euid = os.geteuid()
-
-    uname = os.getenv("SUDO_USER", "") if euid == 0 else pwd.getpwuid(uid).pw_name
     euname = pwd.getpwuid(euid).pw_name
+
+    uname = os.getenv("SUDO_USER", "")
+    if uname:
+        uid = pwd.getpwnam(uname).pw_uid
+
+    else:
+        uid = os.getuid()
+        uname = pwd.getpwuid(uid).pw_name
 
     exc_path = Path(os.path.curdir).absolute()
     cache_path = Path("~/.cache/envira").expanduser().absolute()
@@ -72,7 +82,7 @@ def _get_exec_info() -> ExecInfo:
     )
 
 
-LSB_INFO = _get_lsb_info()
+SYS_INFO = _get_sys_info()
 EXEC_INFO = _get_exec_info()
 
 

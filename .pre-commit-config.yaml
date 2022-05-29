@@ -18,7 +18,7 @@ repos:
         name: isort (python)
         args: ["--profile", "black"]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: e1ba0b6ec1deaea4243d9469af65131207a24e53 # frozen 0.960
-    hooks:
-      - id: mypy
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: e1ba0b6ec1deaea4243d9469af65131207a24e53 # frozen 0.960
+  #   hooks:
+  #     - id: mypy
