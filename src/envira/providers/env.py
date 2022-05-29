@@ -75,7 +75,7 @@ class EnvProvider(BaseProvider[EnvPattern]):
     def apply(self, *, force: bool = False, env: Environment = None, **kwgs) -> None:  # type: ignore
         if env is None:
             print("Environment not provided!")
-            return
+            return 1
 
         if self.section_obj.copy_:
             for copy_ in self.section_obj.copy_:
@@ -96,7 +96,7 @@ class EnvProvider(BaseProvider[EnvPattern]):
             res = self._apply_dirtree(section)
             if res.err:
                 provider_cmd_error(res)
-                return
+                return 1
 
             print("Directory structure builded!")
 
@@ -106,7 +106,7 @@ class EnvProvider(BaseProvider[EnvPattern]):
                 res = self._apply_exec(env, exec_)
                 if res.err or res.exit_code != 0:
                     provider_cmd_error(res)
-                    return
+                    return 1
 
             print("All scripts are executed!")
 

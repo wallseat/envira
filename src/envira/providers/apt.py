@@ -52,12 +52,12 @@ class AptProvider(BaseProvider[AptPattern]):
                     if repo.key_url:
                         if not is_url(repo.key_url):
                             print(f"Not valid key url '{repo.key_url}'")
-                            return
+                            return 1
 
                         res = self._download_key(repo.key_url)
                         if res.err:
                             provider_cmd_error(res)
-                            return
+                            return 1
 
                         key_path = res.data  # type: ignore
 
@@ -72,7 +72,7 @@ class AptProvider(BaseProvider[AptPattern]):
 
                     if res.err:
                         provider_cmd_error(res)
-                        return
+                        return 1
 
             print("All repos added successfully")
 
@@ -80,7 +80,7 @@ class AptProvider(BaseProvider[AptPattern]):
             res = self._apt_update()
             if res.err:
                 provider_cmd_error(res)
-                return
+                return 1
 
             print("Apt repos update successfully")
 
@@ -88,7 +88,7 @@ class AptProvider(BaseProvider[AptPattern]):
             res = self._apt_upgrade()
             if res.err:
                 provider_cmd_error(res)
-                return
+                return 1
 
             print("Apt packages upgrade successfully")
 
@@ -98,7 +98,7 @@ class AptProvider(BaseProvider[AptPattern]):
                     res = self._apt_install(package)
                     if res.err:
                         provider_cmd_error(res)
-                        return
+                        return 1
 
                     print(f"Successfully installed {package}, version: {res.data}")
 

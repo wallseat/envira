@@ -26,7 +26,9 @@ class Configurator:
         for section in self.providers:
             if section in conf_obj:
                 provider = self.providers[section](conf_obj[section])
-                provider.apply(force=force, env=self.env)
+
+                if provider.apply(force=force, env=self.env):
+                    return
 
     def _prepare_providers(self) -> None:
         self.providers = {
