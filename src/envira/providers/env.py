@@ -88,6 +88,7 @@ class EnvProvider(BaseProvider[EnvPattern]):
                 res = self._apply_copy(env, copy_, force)
                 if res.err:
                     provider_cmd_error(res)
+                    return 1
 
         if self.section_obj.dirtree:
             section = self.section_obj.dirtree
@@ -160,12 +161,11 @@ class EnvProvider(BaseProvider[EnvPattern]):
         else:
             if (
                 dest.exists()
-                and (
+                or (
                     not dest.is_symlink()
                     or (dest.is_symlink() and dest.resolve() != source)
                 )
-                and not force
-            ):
+            ) and not force:
                 return ProviderOperationResult(
                     err=f"File {dest} already exists! Use -f/--force to overwrite!"
                 )
