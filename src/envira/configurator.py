@@ -91,7 +91,7 @@ def main() -> int:
         git_loader = GitLoader(args.path_or_url)
         git_loader.clone()
 
-        if git_loader.is_cloned:
+        if not git_loader.is_cloned:
             print("Cloning failed!")
             return 1
 
